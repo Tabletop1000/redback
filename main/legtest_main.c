@@ -73,6 +73,11 @@ typedef enum {
     DIRECTION_REVERSE
 }rb_direction_t;
 
+/**
+ * @brief Changes motor direction based on sign of value demand
+ * @param motor ponter to bdc motor handle
+ * @param current_value the signed float value
+*/
 void set_motor_direction(bdc_motor_handle_t motor,float current_value)
 {
     static rb_direction_t dir = DIRECTION_FORWARD;
@@ -87,6 +92,12 @@ void set_motor_direction(bdc_motor_handle_t motor,float current_value)
     }
 }
 
+/**
+ * @brief Creates a motor instance
+ * @param pin_a GPIO A
+ * @param mpin_b GPIO B
+ * @returns bdc motor handle
+*/
 bdc_motor_handle_t new_motor(uint32_t pin_a, uint32_t pin_b)
 {
     bdc_motor_handle_t motor = NULL; // Permenant memory
@@ -103,7 +114,7 @@ bdc_motor_handle_t new_motor(uint32_t pin_a, uint32_t pin_b)
     return motor;
 }
 
-static float goal_list[] = {0.0,50.0,90.0,20.0,-65.0,-95.0,0.0};
+static float goal_list[] = {0.0,50.0,90.0,20.0,-65.0,-95.0,70.0,0.0};
 static int goal_index = 0;
 static void leg_task(bdc_motor_handle_t motor)
 {
@@ -111,23 +122,24 @@ static void leg_task(bdc_motor_handle_t motor)
     float goal_prev = 0;
     float current_value = 0;
     ESP_LOGI(TAG, "Create timer and operator");
+    float m = 0.3;
 
     while(1){
         float goal = goal_list[goal_index++];
-        if(goal_index > 7)
+        if(goal_index > 8)
         {
             ESP_LOGI(TAG,"-------- Complete ----------");
             while(1)vTaskDelay(pdMS_TO_TICKS(100));
         }
-        ESP_LOGI(TAG,"Next goal: %f", goal);
+        ESP_LOGI(TAG,"Next goal: %f, prev goal: %f", goal, goal_prev);
 
         time_t t0 = rb_clock;
-        float m = 0.1;
+        m = 0.3;
         m = (goal >= goal_prev) ? m : m*-1;
 
         if(goal != goal_prev)
         {
-            while(current_value != goal)
+            while(abs(abs(goal) - abs(current_value)) > 1)
             {
                 rb_interpolate_linear(&goal_prev,&goal,&current_value,&t0,&rb_clock,&m);
                 set_motor_direction(motor,current_value);
