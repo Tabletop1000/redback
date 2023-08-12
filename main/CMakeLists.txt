@@ -1,2 +1,2 @@
-idf_component_register(SRCS "legtest_main.c"
+idf_component_register(SRCS "redbacklib.c" "legtest_main.c"
                     INCLUDE_DIRS ".")
