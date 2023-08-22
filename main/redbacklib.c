@@ -57,13 +57,13 @@ bdc_motor_handle_t new_motor(uint32_t pin_a, uint32_t pin_b)
     return motor;
 }
 
-pcnt_unit_handle_t new_encoder(uint32_t pin_a, uint32_t pin_b, uint32_t ppr)
+pcnt_unit_handle_t new_encoder(uint32_t pin_a, uint32_t pin_b, int32_t max_pulse_count)
 {
     pcnt_unit_handle_t encoder = NULL;
     pcnt_unit_config_t encoder_conf = {
         .flags.accum_count = true,
-        .high_limit = ppr,
-        .low_limit = 0
+        .high_limit = max_pulse_count,
+        .low_limit = -max_pulse_count,
     };
     ESP_ERROR_CHECK(pcnt_new_unit(&encoder_conf, &encoder));
     pcnt_glitch_filter_config_t fliter_conf = {

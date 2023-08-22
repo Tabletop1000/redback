@@ -93,9 +93,9 @@ bdc_motor_handle_t new_motor(uint32_t pin_a, uint32_t pin_b);
  * @brief Creates an encoder instance
  * @param pin_a GPIO A
  * @param pin_b GPIO B
- * @param ppr Encoder pulses per rotation
+ * @param max_pulse_count after which the count will reset to min count. min count is negated value
  * @returns encodr handle
 */
-pcnt_unit_handle_t new_encoder(uint32_t pin_a, uint32_t pin_b, uint32_t ppr);
+pcnt_unit_handle_t new_encoder(uint32_t pin_a, uint32_t pin_b, int32_t max_pulse_count);
 
 #endif

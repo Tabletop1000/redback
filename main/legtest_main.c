@@ -7,6 +7,9 @@
 #include "redbacklib.h"
 
 #define INCLUDE_xTaskDelayUntil 1
+#define ENCODER_GPIO_A 27
+#define ENCODER_GPIO_B 30
+#define ENCODER_PPR 5281.10
 
 static const char *TAG = "rb";
 static time_t rb_clock = 0;
@@ -47,6 +50,13 @@ static void leg_task(bdc_motor_handle_t motor)
     }
 }
 
+static void report_angle_task(pcnt_unit_handle_t encoder)
+{
+    int cur_pulse_count = 0;
+    pcnt_unit_get_count(encoder, &cur_pulse_count);
+    ESP_LOGI(TAG,"pulse count: %d",cur_pulse_count);
+}
+
 static void update_clock()
 {
     while(1){
@@ -60,9 +70,13 @@ void app_main(void)
 {
     static bdc_motor_handle_t wheel_motor = NULL;
     wheel_motor = new_motor(MCPWM_GPIO_A,MCPWM_GPIO_B);
+
+    static pcnt_unit_handle_t encoder = NULL;
+    encoder = new_encoder(ENCODER_GPIO_A,ENCODER_GPIO_B,6000);
     ESP_ERROR_CHECK(bdc_motor_enable(wheel_motor));
     ESP_ERROR_CHECK(bdc_motor_forward(wheel_motor));
 
     xTaskCreate(update_clock, "update_clock",2048,NULL,4,NULL);
     xTaskCreate(leg_task, "leg_task", 2048, wheel_motor, 10, NULL);
+    xTaskCreate(leg_task, "report_angle_task", 2048, encoder, 5, NULL);
 }
