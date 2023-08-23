@@ -7,6 +7,8 @@
   ],
   "idf.flashType": "UART",
   "files.associations": {
-    "mcpwm_cmpr.h": "c"
+    "mcpwm_cmpr.h": "c",
+    "gpio.h": "c",
+    "mcpwm_prelude.h": "c"
   }
 }
