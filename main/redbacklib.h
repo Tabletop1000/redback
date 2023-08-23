@@ -14,12 +14,14 @@
 #include "driver/mcpwm_prelude.h"
 #include "driver/pulse_cnt.h"
 #include "bdc_motor.h"
+#include "pid_ctrl.h"
 
 #define MCPWM_FREQ_HZ 10000 // 10 kHz
-#define MCPWM_GPIO_A 32
-#define MCPWM_GPIO_B 33
 #define MCPWM_TIMER_RESOLUTION_HZ 10000000 // 10 MHz
 #define MCPWM_DUTY_TICK_MAX       (MCPWM_TIMER_RESOLUTION_HZ / MCPWM_FREQ_HZ) // maximum value we can set for the duty cycle, in ticks
+#define BDC_PID_LOOP_PERIOD_MS        10   // calculate the motor speed every 10ms
+#define BDC_PID_EXPECT_SPEED          400  // expected motor speed, in the pulses counted by the rotary encoder
+
 
 typedef enum{
     rb_OK,
@@ -47,6 +49,12 @@ typedef struct{
     time_t t0;  // start time
     time_t t1;  // end time
 } rb_fparam_linear_t;
+
+typedef struct{
+    pcnt_unit_handle_t encoder;
+    bdc_motor_handle_t motor;
+    pid_ctrl_block_handle_t pid;
+}rb_leg_t;
 
 /**
  * @brief Create a linear (y = mx + c) function
@@ -97,5 +105,13 @@ bdc_motor_handle_t new_motor(uint32_t pin_a, uint32_t pin_b);
  * @returns encodr handle
 */
 pcnt_unit_handle_t new_encoder(uint32_t pin_a, uint32_t pin_b, int32_t max_pulse_count);
+
+pid_ctrl_block_handle_t new_pid();
+pid_ctrl_parameter_t pid_config = {
+    .kp = 0.6,
+    .ki = 0.4,
+    .kd = 0.2,
+    .cal_type = PID_CAL_TYPE_INCREMENTAL,
+};
 
 #endif
