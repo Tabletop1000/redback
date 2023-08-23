@@ -91,6 +91,9 @@ pcnt_unit_handle_t new_encoder(uint32_t pin_a, uint32_t pin_b, int32_t max_pulse
     ESP_ERROR_CHECK(pcnt_channel_set_edge_action(chan_b, PCNT_CHANNEL_EDGE_ACTION_INCREASE, PCNT_CHANNEL_EDGE_ACTION_DECREASE));
     ESP_ERROR_CHECK(pcnt_channel_set_level_action(chan_b, PCNT_CHANNEL_LEVEL_ACTION_KEEP, PCNT_CHANNEL_LEVEL_ACTION_INVERSE));
 
+    ESP_ERROR_CHECK(pcnt_unit_add_watch_point(encoder, max_pulse_count));
+    ESP_ERROR_CHECK(pcnt_unit_add_watch_point(encoder, 0));
+
     ESP_ERROR_CHECK(pcnt_unit_enable(encoder));
     ESP_ERROR_CHECK(pcnt_unit_clear_count(encoder));
     ESP_ERROR_CHECK(pcnt_unit_start(encoder));

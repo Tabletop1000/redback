@@ -8,12 +8,11 @@
 
 #define INCLUDE_xTaskDelayUntil 1
 #define ENCODER_GPIO_A 27
-#define ENCODER_GPIO_B 30
+#define ENCODER_GPIO_B 14
 #define ENCODER_PPR 5281.10
 
 static const char *TAG = "rb";
 static time_t rb_clock = 0;
-
 static float goal_list[] = {0.0,50.0,90.0,20.0,-65.0,-95.0,70.0,0.0};
 static int goal_index = 0;
 static void leg_task(bdc_motor_handle_t motor)
@@ -52,9 +51,12 @@ static void leg_task(bdc_motor_handle_t motor)
 
 static void report_angle_task(pcnt_unit_handle_t encoder)
 {
-    int cur_pulse_count = 0;
-    pcnt_unit_get_count(encoder, &cur_pulse_count);
-    ESP_LOGI(TAG,"pulse count: %d",cur_pulse_count);
+    while(1){
+        int cur_pulse_count = 0;
+        pcnt_unit_get_count(encoder, &cur_pulse_count);
+        ESP_LOGI(TAG,"pulse count: %d",cur_pulse_count);
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
 }
 
 static void update_clock()
@@ -77,6 +79,6 @@ void app_main(void)
     ESP_ERROR_CHECK(bdc_motor_forward(wheel_motor));
 
     xTaskCreate(update_clock, "update_clock",2048,NULL,4,NULL);
-    xTaskCreate(leg_task, "leg_task", 2048, wheel_motor, 10, NULL);
-    xTaskCreate(leg_task, "report_angle_task", 2048, encoder, 5, NULL);
+    //xTaskCreate(leg_task, "leg_task", 2048, wheel_motor, 10, NULL);
+    xTaskCreate(report_angle_task, "report_angle_task", 2048, encoder, 5, NULL);
 }
