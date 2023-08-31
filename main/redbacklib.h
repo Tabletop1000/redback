@@ -107,11 +107,11 @@ bdc_motor_handle_t new_motor(uint32_t pin_a, uint32_t pin_b);
 pcnt_unit_handle_t new_encoder(uint32_t pin_a, uint32_t pin_b, int32_t max_pulse_count);
 
 pid_ctrl_block_handle_t new_pid();
-pid_ctrl_parameter_t pid_config = {
-    .kp = 0.6,
-    .ki = 0.4,
-    .kd = 0.2,
-    .cal_type = PID_CAL_TYPE_INCREMENTAL,
-};
+// pid_ctrl_parameter_t pid_config = {
+//     .kp = 0.6,
+//     .ki = 0.4,
+//     .kd = 0.2,
+//     .cal_type = PID_CAL_TYPE_INCREMENTAL,
+// };
 
 #endif

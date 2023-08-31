@@ -103,19 +103,19 @@ pcnt_unit_handle_t new_encoder(uint32_t pin_a, uint32_t pin_b, int32_t max_pulse
 
 pid_ctrl_block_handle_t new_pid(int motor_max_duty_tick)
 {
-    pid_ctrl_parameter_t pid_config = {
-        .kp = 0.6,
-        .ki = 0.4,
-        .kd = 0.2,
+    pid_ctrl_parameter_t pid_runtime_param = {
+        .kp = 0.9,
+        .ki = 0.3,
+        .kd = 0.1,
         .cal_type = PID_CAL_TYPE_INCREMENTAL,
         .max_output   = motor_max_duty_tick - 1,
-        .min_output   = 0,
+        .min_output   = -motor_max_duty_tick + 1,
         .max_integral = 1000,
         .min_integral = -1000,
     };
-    pid_ctrol_block_handle_t pid_ctrl = NULL;
+    pid_ctrl_block_handle_t pid_ctrl = NULL;
     pid_ctrl_config_t pid_config = {
-        .init_param = pid_config,
+        .init_param = pid_runtime_param,
     };
     ESP_ERROR_CHECK(pid_new_control_block(&pid_config, &pid_ctrl));
     return pid_ctrl;

@@ -9,7 +9,8 @@
                 "${config:idf.espAdfPath}/components/**",
                 "${config:idf.espAdfPathWin}/components/**",
                 "${workspaceFolder}/managed_components/**",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/managed_components/espressif__pid_ctrl/include"
             ],
             "browse": {
                 "path": [
